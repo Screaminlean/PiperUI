@@ -1,18 +1,17 @@
-﻿// This Source Code Form is subject to the terms of the MIT License.
-// If a copy of the MIT was not distributed with this file, You can obtain one at https://opensource.org/licenses/MIT.
-// Copyright (C) Leszek Pomianowski and WPF UI Contributors.
-// All Rights Reserved.
-
-using System.Collections.ObjectModel;
-using Wpf.Ui.Common;
+﻿using System.Collections.ObjectModel;
+using System.IO;
+using PiperUI.Helpers;
+using PiperUI.Services;
 using Wpf.Ui.Controls;
 
 namespace PiperUI.ViewModels.Windows
 {
     public partial class MainWindowViewModel : ObservableObject
     {
+        private readonly IDownloader _downloader;
+
         [ObservableProperty]
-        private string _applicationTitle = "Piper";
+        private string _applicationTitle = "WinPiper";
 
         [ObservableProperty]
         private ObservableCollection<object> _menuItems = new()
@@ -20,9 +19,9 @@ namespace PiperUI.ViewModels.Windows
             new NavigationViewItem()
             {
                 Content = "Piper",
-                Icon = new SymbolIcon { Symbol = SymbolRegular.PersonFeedback16 },
+                Icon = new SymbolIcon { Symbol = SymbolRegular.Home24 },
                 TargetPageType = typeof(Views.Pages.DashboardPage)
-            }
+            },
         };
 
         [ObservableProperty]
@@ -37,9 +36,23 @@ namespace PiperUI.ViewModels.Windows
         };
 
         [ObservableProperty]
-        private ObservableCollection<MenuItem> _trayMenuItems = new()
+        private ObservableCollection<Wpf.Ui.Controls.MenuItem> _trayMenuItems = new()
         {
-            new MenuItem { Header = "Home", Tag = "tray_home" }
+            new Wpf.Ui.Controls.MenuItem { Header = "Home", Tag = "tray_home" }
         };
+
+        public MainWindowViewModel(IDownloader downloader)
+        {
+            _downloader = downloader;
+            // Initialize the application data folder for storing models or output files
+            string modelsFolder = Path.Combine(HelperMethods.AppDataPath, "models"); // Folder for models
+            string outputFolder = Path.Combine(HelperMethods.AppDataPath, "output"); // Folder for output files
+            string customFolder = Path.Combine(HelperMethods.AppDataPath, "custom"); // Folder for custom models
+            // Create the directories if they do not exist
+            Directory.CreateDirectory(modelsFolder); // Create models folder
+            Directory.CreateDirectory(outputFolder); // Create output folder
+            Directory.CreateDirectory(customFolder); // Create custom folder
+        }
+        
     }
 }

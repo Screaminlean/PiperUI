@@ -1,12 +1,8 @@
-﻿// This Source Code Form is subject to the terms of the MIT License.
-// If a copy of the MIT was not distributed with this file, You can obtain one at https://opensource.org/licenses/MIT.
-// Copyright (C) Leszek Pomianowski and WPF UI Contributors.
-// All Rights Reserved.
-
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using PiperUI.Views.Pages;
 using PiperUI.Views.Windows;
+using Wpf.Ui;
 
 namespace PiperUI.Services
 {
@@ -16,6 +12,8 @@ namespace PiperUI.Services
     public class ApplicationHostService : IHostedService
     {
         private readonly IServiceProvider _serviceProvider;
+
+        private INavigationWindow _navigationWindow;
 
         public ApplicationHostService(IServiceProvider serviceProvider)
         {
@@ -45,24 +43,17 @@ namespace PiperUI.Services
         /// </summary>
         private async Task HandleActivationAsync()
         {
-            await Task.CompletedTask;
-
             if (!Application.Current.Windows.OfType<MainWindow>().Any())
             {
-                var navigationWindow = _serviceProvider.GetRequiredService<MainWindow>();
-                navigationWindow.Loaded += OnNavigationWindowLoaded;
-                navigationWindow.Show();
-            }
-        }
+                _navigationWindow = (
+                    _serviceProvider.GetService(typeof(INavigationWindow)) as INavigationWindow
+                )!;
+                _navigationWindow!.ShowWindow();
 
-        private void OnNavigationWindowLoaded(object sender, RoutedEventArgs e)
-        {
-            if (sender is not MainWindow navigationWindow)
-            {
-                return;
+                _navigationWindow.Navigate(typeof(Views.Pages.DashboardPage));
             }
 
-            navigationWindow.NavigationView.Navigate(typeof(DashboardPage));
+            await Task.CompletedTask;
         }
     }
 }
