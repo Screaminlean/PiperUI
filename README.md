@@ -1,3 +1,11 @@
+# This fork
+** This fork is a work in progress, as such it is not ready to be used! **
+I will update this readme file when it is ready to be tested by the public.
+This is my contribution to refactor the app to properly use the mvvm patern and seperate all the logic from the views.
+Most of this is done now.
+
+I will add a task list when I can.
+
 # PiperUI
 
 A user interface for creating voices with the Piper TTS.  
