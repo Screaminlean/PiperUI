@@ -1,15 +1,13 @@
 ﻿using System.Collections.ObjectModel;
 using System.IO;
 using PiperUI.Helpers;
-using PiperUI.Services;
+using PiperUI.Interfaces;
 using Wpf.Ui.Controls;
 
 namespace PiperUI.ViewModels.Windows
 {
     public partial class MainWindowViewModel : ObservableObject
     {
-        private readonly IDownloader _downloader;
-
         [ObservableProperty]
         private string _applicationTitle = "WinPiper";
 
@@ -41,9 +39,9 @@ namespace PiperUI.ViewModels.Windows
             new Wpf.Ui.Controls.MenuItem { Header = "Home", Tag = "tray_home" }
         };
 
-        public MainWindowViewModel(IDownloader downloader)
+        public MainWindowViewModel(IConfigurationService configuration, IDownloaderService downloader)
         {
-            _downloader = downloader;
+            //_downloader = downloader;
             // Initialize the application data folder for storing models or output files
             string modelsFolder = Path.Combine(HelperMethods.AppDataPath, "models"); // Folder for models
             string outputFolder = Path.Combine(HelperMethods.AppDataPath, "output"); // Folder for output files

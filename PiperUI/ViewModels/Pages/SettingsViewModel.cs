@@ -1,10 +1,12 @@
-﻿using Wpf.Ui.Abstractions.Controls;
+﻿using PiperUI.Interfaces;
+using Wpf.Ui.Abstractions.Controls;
 using Wpf.Ui.Appearance;
 
 namespace PiperUI.ViewModels.Pages
 {
     public partial class SettingsViewModel : ObservableObject, INavigationAware
     {
+        private readonly IConfigurationService _configurationService;
         private bool _isInitialized = false;
 
         [ObservableProperty]
@@ -12,6 +14,11 @@ namespace PiperUI.ViewModels.Pages
 
         [ObservableProperty]
         private ApplicationTheme _currentTheme = ApplicationTheme.Unknown;
+
+        public SettingsViewModel(IConfigurationService configuration)
+        {
+               _configurationService = configuration ?? throw new ArgumentNullException(nameof(configuration));
+        }
 
         public Task OnNavigatedToAsync()
         {

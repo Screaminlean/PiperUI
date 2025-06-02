@@ -1,10 +1,11 @@
-﻿using System.Diagnostics;
+﻿using PiperUI.Interfaces;
+using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
 
 namespace PiperUI.Services
 {
-    public partial class DownloaderService : ObservableObject, IDownloader
+    public partial class DownloaderService : ObservableObject, IDownloaderService
     {
         [ObservableProperty]
         private bool isInProgress = false;

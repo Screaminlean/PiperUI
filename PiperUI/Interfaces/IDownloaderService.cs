@@ -1,6 +1,6 @@
-﻿namespace PiperUI.Services
+﻿namespace PiperUI.Interfaces
 {
-    public interface IDownloader
+    public interface IDownloaderService
     {
         Task<bool> DownloadFileAsync(string url, string destinationPath, string fileName);
         bool DownloadFile(string url, string destinationPath, string fileName);

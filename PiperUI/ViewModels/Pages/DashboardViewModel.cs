@@ -4,17 +4,19 @@ using System.IO;
 using System.IO.Compression;
 using System.Text.Json;
 using PiperUI.Helpers;
-using PiperUI.Services;
+using PiperUI.Interfaces;
 
 namespace PiperUI.ViewModels.Pages
 {
     public partial class DashboardViewModel : ObservableObject
     {
-        private readonly IDownloader _downloader;
+        private readonly IConfigurationService _configurationService;
+        private readonly IDownloaderService _downloaderService;
 
-        public DashboardViewModel(IDownloader downloader)
+        public DashboardViewModel(IConfigurationService configuration, IDownloaderService downloader)
         {
-            _downloader = downloader;
+            _configurationService = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            _downloaderService = downloader ?? throw new ArgumentNullException(nameof(downloader));
         }
 
         [ObservableProperty]
@@ -87,7 +89,7 @@ namespace PiperUI.ViewModels.Pages
             {
                 StatusText = "Downloading Piper..."; // Update status text
                 Trace.WriteLine("Starting download of Piper from: " + url);
-                bool downloadSuccess = await _downloader.DownloadFileAsync(url, HelperMethods.AppDataPath, zipFileName);
+                bool downloadSuccess = await _downloaderService.DownloadFileAsync(url, HelperMethods.AppDataPath, zipFileName);
                 if (downloadSuccess)
                 {
                     StatusText = "Piper downloaded successfully."; // Update status text
@@ -127,7 +129,7 @@ namespace PiperUI.ViewModels.Pages
                     StatusText = "Downloading voice data..."; // Update status text
                     Trace.WriteLine("The voices.json file does not exist.", fileName);
                     string url = "https://huggingface.co/rhasspy/piper-voices/resolve/main/voices.json";
-                    var downloadSuccess = await _downloader.DownloadFileAsync(url, HelperMethods.AppDataPath, "voices.json"); // Download the file if it does not exist
+                    var downloadSuccess = await _downloaderService.DownloadFileAsync(url, HelperMethods.AppDataPath, "voices.json"); // Download the file if it does not exist
                     if (!downloadSuccess || !File.Exists(fileName))
                     {
                         StatusText = "Failed to download voice data."; // Update status text

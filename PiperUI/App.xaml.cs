@@ -1,9 +1,9 @@
 ﻿using System.IO;
-using System.Reflection;
 using System.Windows.Threading;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using PiperUI.Interfaces;
 using PiperUI.Services;
 using PiperUI.ViewModels.Pages;
 using PiperUI.ViewModels.Windows;
@@ -42,6 +42,11 @@ namespace PiperUI
                 // Service containing navigation, same as INavigationWindow... but without window
                 services.AddSingleton<INavigationService, NavigationService>();
 
+                // Register DownloaderService as a singleton for IDownloader
+                services.AddSingleton<IDownloaderService, DownloaderService>();
+                // Register ConfigurationService as a singleton for IConfigurationService
+                services.AddSingleton<IConfigurationService, ConfigurationService>();
+
                 // Main window with navigation
                 services.AddSingleton<INavigationWindow, MainWindow>();
                 services.AddSingleton<MainWindowViewModel>();
@@ -51,8 +56,7 @@ namespace PiperUI
                 services.AddSingleton<SettingsPage>();
                 services.AddSingleton<SettingsViewModel>();
 
-                // Register DownloaderService as a singleton for IDownloader
-                services.AddSingleton<IDownloader, DownloaderService>();
+                
             }).Build();
 
         /// <summary>
