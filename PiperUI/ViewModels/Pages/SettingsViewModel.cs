@@ -60,6 +60,7 @@ namespace PiperUI.ViewModels.Pages
             VoicesDownloadUrl = _appConfig?["VoicesDownloadUrl"]?.ToString() ?? HelperMethods.voicesDownloadUrl;
             CustomVoicesDir = _userConfig?["CustomVoicesDirectory"]?.ToString() ?? HelperMethods.CustomVoicesDirectory;
             OutputDir = _userConfig?["OutputDirectory"]?.ToString() ?? HelperMethods.OutputDirectory;
+            CurrentTheme = ApplicationThemeManager.GetAppTheme();
         }
 
         // Called when navigated to the settings page
