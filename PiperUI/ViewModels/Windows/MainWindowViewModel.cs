@@ -9,7 +9,7 @@ namespace PiperUI.ViewModels.Windows
     public partial class MainWindowViewModel : ObservableObject
     {
         [ObservableProperty]
-        private string _applicationTitle = "WinPiper";
+        private string _applicationTitle = HelperMethods.AppName;
 
         [ObservableProperty]
         private ObservableCollection<object> _menuItems = new()
