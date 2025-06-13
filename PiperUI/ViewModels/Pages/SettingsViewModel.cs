@@ -5,6 +5,11 @@ using System.IO;
 using System.Text.Json.Nodes;
 using Wpf.Ui.Abstractions.Controls;
 using Wpf.Ui.Appearance;
+using System.Windows;
+using PiperUI.Views.Pages;
+using System.Linq;
+using CommunityToolkit.Mvvm.Messaging;
+using PiperUI.Messages;
 
 namespace PiperUI.ViewModels.Pages
 {
@@ -126,7 +131,37 @@ namespace PiperUI.ViewModels.Pages
         [RelayCommand]
         private void SaveSettingsCommand()
         {
-            SaveSettings();
+            bool success = false;
+            try
+            {
+                SaveSettings();
+                success = true;
+            }
+            catch
+            {
+                success = false;
+            }
+
+            // Send snackbar message via Messenger
+            var message = success ? "Settings saved successfully!" : "Failed to save settings.";
+            var appearance = success ? Wpf.Ui.Controls.ControlAppearance.Success : Wpf.Ui.Controls.ControlAppearance.Danger;
+            WeakReferenceMessenger.Default.Send(new SnackbarMessage(message, appearance));
+        }
+
+        // Helper to find the SettingsPage in the visual tree
+        private SettingsPage FindSettingsPage(DependencyObject parent)
+        {
+            if (parent is SettingsPage page)
+                return page;
+            int count = System.Windows.Media.VisualTreeHelper.GetChildrenCount(parent);
+            for (int i = 0; i < count; i++)
+            {
+                var child = System.Windows.Media.VisualTreeHelper.GetChild(parent, i);
+                var result = FindSettingsPage(child);
+                if (result != null)
+                    return result;
+            }
+            return null;
         }
 
         // Called when the theme changes, updates dirty state

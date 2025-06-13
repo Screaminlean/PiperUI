@@ -1,9 +1,9 @@
 ﻿using PiperUI.ViewModels.Pages;
-using Wpf.Ui.Abstractions.Controls;
+// Removed INavigableView usage for compatibility
 
 namespace PiperUI.Views.Pages
 {
-    public partial class SettingsPage : INavigableView<SettingsViewModel>
+    public partial class SettingsPage
     {
         public SettingsViewModel ViewModel { get; }
 
@@ -11,8 +11,8 @@ namespace PiperUI.Views.Pages
         {
             ViewModel = viewModel;
             DataContext = this;
-
             InitializeComponent();
+            // Snackbar logic removed, now handled globally in MainWindow
         }
     }
 }

@@ -3,12 +3,16 @@ using Wpf.Ui;
 using Wpf.Ui.Abstractions;
 using Wpf.Ui.Appearance;
 using Wpf.Ui.Controls;
+using CommunityToolkit.Mvvm.Messaging;
+using PiperUI.Messages;
 
 namespace PiperUI.Views.Windows
 {
     public partial class MainWindow : INavigationWindow
     {
         public MainWindowViewModel ViewModel { get; }
+        private SnackbarPresenter? _snackbarPresenter;
+        private Snackbar? _snackbar;
 
         public MainWindow(
             MainWindowViewModel viewModel,
@@ -25,6 +29,27 @@ namespace PiperUI.Views.Windows
             SetPageService(navigationViewPageProvider);
 
             navigationService.SetNavigationControl(RootNavigation);
+
+            // Get SnackbarPresenter from XAML
+            _snackbarPresenter = SnackbarPresenter;
+
+            // Register for SnackbarMessage globally
+            WeakReferenceMessenger.Default.Register<SnackbarMessage>(this, (r, m) =>
+            {
+                ShowSnackbar(m.Value.Message, m.Value.Appearance);
+            });
+        }
+
+        private void ShowSnackbar(string message, ControlAppearance appearance = ControlAppearance.Primary)
+        {
+            if (_snackbarPresenter == null)
+                return;
+            _snackbar = new Snackbar(_snackbarPresenter)
+            {
+                Content = message,
+                Appearance = appearance
+            };
+            _snackbar.Show();
         }
 
         #region INavigationWindow methods
