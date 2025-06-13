@@ -10,8 +10,8 @@
     Title="SettingsPage"
     d:DataContext="{d:DesignInstance local:SettingsPage,
                                      IsDesignTimeCreatable=False}"
-    d:DesignHeight="450"
-    d:DesignWidth="800"
+    d:DesignHeight="650"
+    d:DesignWidth="1100"
     ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
     ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
@@ -41,11 +41,98 @@
             GroupName="themeSelect"
             IsChecked="{Binding ViewModel.CurrentTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Dark, Mode=OneWay}" />
 
+        <RadioButton
+            Margin="0,8,0,0"
+            Command="{Binding ViewModel.ChangeThemeCommand, Mode=OneWay}"
+            CommandParameter="theme_highcontrast"
+            Content="High Contrast"
+            GroupName="themeSelect"
+            IsChecked="{Binding ViewModel.CurrentTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=HighContrast, Mode=OneWay}" />
+
         <TextBlock
-            Margin="0,24,0,0"
             FontSize="20"
             FontWeight="Medium"
-            Text="About PiperUI" />
-        <TextBlock Margin="0,12,0,0" Text="{Binding ViewModel.AppVersion, Mode=OneWay}" />
+            Text="Piper Downloads" />
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="125" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="60" />
+                <ColumnDefinition Width="60" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0" Text="Piper:" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10,0,0,0" />
+            <TextBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" Margin="10,10,10,0" Text="{Binding ViewModel.PiperDownloadUrl, Mode=TwoWay}"  />
+
+            <TextBlock Grid.Row="1" Text="Voices Json:" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10,0,0,0" />
+            <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" Margin="10,10,10,0" Text="{Binding ViewModel.VoicesDownloadUrl, Mode=TwoWay}"  />
+        </Grid>
+
+        <TextBlock
+    FontSize="20"
+    FontWeight="Medium"
+    Text="File Paths" />
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="125" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="60" />
+                <ColumnDefinition Width="60" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0" Text="App Data:" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10,0,0,0" />
+            <TextBox x:Name="TbAppDataDir" Grid.Row="0" Grid.Column="1" Margin="10,10,10,0" Text="{Binding ViewModel.AppDataDir, Mode=OneWay}" IsEnabled="False"  />
+            <ui:Button Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2" Icon="{ui:SymbolIcon OpenFolder24,Filled=True}" ToolTip="Open" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="5,10,0,0" Appearance="Primary"
+                       Command="{Binding ViewModel.OpenDirectoryCommand}"
+                       CommandParameter="{Binding Text, ElementName=TbAppDataDir}"/>
+            
+            <TextBlock Grid.Row="1" Text="User App Data:" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10,0,0,0" />
+            <TextBox x:Name="TbUserAppDataDir" Grid.Row="1" Grid.Column="1" Margin="10,10,10,0" Text="{Binding ViewModel.UserDataDir, Mode=OneWay}" IsEnabled="False" />
+            <ui:Button Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2" Icon="{ui:SymbolIcon OpenFolder24}" ToolTip="Open" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="5,10,0,0" Appearance="Primary"
+                       Command="{Binding ViewModel.OpenDirectoryCommand}"
+                       CommandParameter="{Binding Text, ElementName=TbUserAppDataDir}"/>
+
+
+            <TextBlock Grid.Row="2" Text="Custom Voices Dir:" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10,0,0,0" />
+            <TextBox x:Name="TbCustomVoiceDir" Grid.Row="2" Grid.Column="1" Margin="10,10,10,0" Text="{Binding ViewModel.CustomVoicesDir, Mode=TwoWay}"  />
+            <ui:Button Grid.Row="2" Grid.Column="2" Icon="{ui:SymbolIcon FolderOpen24,Filled=True}" ToolTip="Select" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="5,10,0,0" Appearance="Primary" 
+                       Command="{Binding ViewModel.SelectDirectoryCommand}"
+                       CommandParameter="CustomVoicesDir"/>
+            
+            <ui:Button Grid.Row="2" Grid.Column="3" Icon="{ui:SymbolIcon OpenFolder24,Filled=True}" ToolTip="Open" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="5,10,0,0" Appearance="Primary" 
+                       Command="{Binding ViewModel.OpenDirectoryCommand}"
+                       CommandParameter="{Binding Text, ElementName=TbCustomVoiceDir}"/>
+
+
+            <TextBlock Grid.Row="3" Text="Output Dir:" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10,0,0,0" />
+            <TextBox x:Name="TbOutputDir" Grid.Row="3" Grid.Column="1" Margin="10,10,10,0" Text="{Binding ViewModel.OutputDir, Mode=TwoWay}"  />
+            <ui:Button Grid.Row="3" Grid.Column="2" Icon="{ui:SymbolIcon FolderOpen24,Filled=True}" ToolTip="Select" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="5,10,0,0" Appearance="Primary"
+                       Command="{Binding ViewModel.SelectDirectoryCommand}"
+                       CommandParameter="OutputDir"/>
+            <ui:Button Grid.Row="3" Grid.Column="3" Icon="{ui:SymbolIcon OpenFolder24,Filled=True}" ToolTip="Open" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="5,10,0,0" Appearance="Primary" 
+                       Command="{Binding ViewModel.OpenDirectoryCommand}"
+                       CommandParameter="{Binding Text, ElementName=TbOutputDir}"/>
+
+        </Grid>
+
+
+        <ui:Button
+        Margin="0,12,0,0"
+            Content="Save"
+            Command="{Binding ViewModel.SaveSettingsCommandCommand}"
+
+        />
     </StackPanel>
 </Page>

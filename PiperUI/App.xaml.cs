@@ -52,11 +52,13 @@ namespace PiperUI
                 services.AddSingleton<MainWindowViewModel>();
 
                 services.AddSingleton<DashboardPage>();
-                services.AddSingleton<DashboardViewModel>();
+                services.AddSingleton<InfoViewModel>();
                 services.AddSingleton<SettingsPage>();
                 services.AddSingleton<SettingsViewModel>();
+                services.AddSingleton<InfoPage>();
+                services.AddSingleton<InfoViewModel>();
 
-                
+
             }).Build();
 
         /// <summary>

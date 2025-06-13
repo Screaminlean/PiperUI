@@ -83,8 +83,14 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <Slider x:Name="playbackSpeedSlider" Minimum="0.1" Maximum="5.0" Value="{Binding ViewModel.PlaybackSpeed, Mode=TwoWay}" 
-                    TickFrequency="0.1" IsSnapToTickEnabled="True"
+                <Slider x:Name="playbackSpeedSlider" 
+                        Margin="2,0,2,0"
+                        SmallChange="0.1"
+                        Minimum="0.1" 
+                        Maximum="5.0" 
+                        Value="{Binding ViewModel.PlaybackSpeed, Mode=TwoWay}" 
+                        TickFrequency="0.1" 
+                        IsSnapToTickEnabled="True"
                     />
                 <TextBlock x:Name="playbackSpeedLabel" Grid.Column="1" Margin="10,0,0,0" 
                        VerticalAlignment="Center" Text="{Binding ViewModel.PlaybackSpeedDescription}"/>

@@ -8,12 +8,13 @@ using PiperUI.Interfaces;
 
 namespace PiperUI.ViewModels.Pages
 {
-    public partial class DashboardViewModel : ObservableObject
+    public partial class InfoViewModel : ObservableObject
     {
         private readonly IConfigurationService _configurationService;
+
         private readonly IDownloaderService _downloaderService;
 
-        public DashboardViewModel(IConfigurationService configuration, IDownloaderService downloader)
+        public InfoViewModel(IConfigurationService configuration, IDownloaderService downloader)
         {
             _configurationService = configuration ?? throw new ArgumentNullException(nameof(configuration));
             _downloaderService = downloader ?? throw new ArgumentNullException(nameof(downloader));
@@ -65,7 +66,7 @@ namespace PiperUI.ViewModels.Pages
         public async Task InitializeAsync()
         {
 
-            string piperExecutable = Path.Combine(HelperMethods.AppDataPath, "piper", "piper.exe"); // Path to the piper executable
+            string piperExecutable = Path.Combine(HelperMethods.appDataDir, "piper", "piper.exe"); // Path to the piper executable
             // Check if the directory exists and if the executable file exists
             if (!Directory.Exists(Path.GetDirectoryName(piperExecutable)) || !File.Exists(piperExecutable))
             {
@@ -81,20 +82,21 @@ namespace PiperUI.ViewModels.Pages
 
         private async Task DownloadPiperAsync()
         {
-            string url = "https://github.com/rhasspy/piper/releases/download/2023.11.14-2/piper_windows_amd64.zip";
+            // Get the Piper download URL from ApplicationConfiguration
+            string url = _configurationService.ApplicationConfiguration?["PiperDownloadUrl"]?.ToString() ??
+                HelperMethods.piperDownloadUrl;
             string zipFileName = url.Split("/").Last(); // Extract the file name from the URL
-            string filePath = Path.Combine(HelperMethods.AppDataPath, zipFileName); // Ensure the path is correct for the application data folder
-            
+            string filePath = Path.Combine(HelperMethods.appDataDir, zipFileName); // Ensure the path is correct for the application data folder
             try
             {
                 StatusText = "Downloading Piper..."; // Update status text
                 Trace.WriteLine("Starting download of Piper from: " + url);
-                bool downloadSuccess = await _downloaderService.DownloadFileAsync(url, HelperMethods.AppDataPath, zipFileName);
+                bool downloadSuccess = await _downloaderService.DownloadFileAsync(url, HelperMethods.appDataDir, zipFileName);
                 if (downloadSuccess)
                 {
                     StatusText = "Piper downloaded successfully."; // Update status text
                     Trace.WriteLine("Piper downloaded successfully.");
-                    ZipFile.ExtractToDirectory(filePath, HelperMethods.AppDataPath, true);
+                    ZipFile.ExtractToDirectory(filePath, HelperMethods.appDataDir, true);
                     File.Delete(filePath); // Delete the zip file after extraction
                     Trace.WriteLine("Piper extracted successfully.");
                 }
@@ -123,13 +125,15 @@ namespace PiperUI.ViewModels.Pages
 
             try
             {
-                string fileName = Path.Combine(HelperMethods.AppDataPath, "voices.json"); // Ensure the path is correct for the application data folder
+                string fileName = Path.Combine(HelperMethods.appDataDir, "voices.json"); // Ensure the path is correct for the application data folder
                 if (!File.Exists(fileName))
                 {
                     StatusText = "Downloading voice data..."; // Update status text
                     Trace.WriteLine("The voices.json file does not exist.", fileName);
-                    string url = "https://huggingface.co/rhasspy/piper-voices/resolve/main/voices.json";
-                    var downloadSuccess = await _downloaderService.DownloadFileAsync(url, HelperMethods.AppDataPath, "voices.json"); // Download the file if it does not exist
+                    // Get the Piper download URL from ApplicationConfiguration
+                    string url = _configurationService.ApplicationConfiguration?["VoicesDownloadUrl"]?.ToString() ??
+                        HelperMethods.voicesDownloadUrl;
+                    var downloadSuccess = await _downloaderService.DownloadFileAsync(url, HelperMethods.appDataDir, "voices.json"); // Download the file if it does not exist
                     if (!downloadSuccess || !File.Exists(fileName))
                     {
                         StatusText = "Failed to download voice data."; // Update status text

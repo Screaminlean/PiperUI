@@ -1,4 +1,5 @@
 ﻿using PiperUI.Interfaces;
+using PiperUI.Helpers;
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -7,9 +8,6 @@ namespace PiperUI.Services
 {
     public partial class ConfigurationService : ObservableObject, IConfigurationService
     {
-        private readonly string appName = AppDomain.CurrentDomain.FriendlyName;
-        // Application AppData Directory
-        private readonly string appDataDir;
         // Config File Paths
         private readonly string appConfigPath;
         private readonly string userConfigPath;
@@ -49,12 +47,18 @@ namespace PiperUI.Services
 
         public void SaveApplicationConfiguration()
         {
-            SaveConfiguration(ApplicationConfiguration, appConfigPath);
+            if (ApplicationConfiguration != null)
+            {
+                SaveConfiguration(ApplicationConfiguration, appConfigPath);
+            }
         }
 
         public void SaveUserConfiguration()
         {
-            SaveConfiguration(UserConfiguration, userConfigPath);
+            if (UserConfiguration != null)
+            {
+                SaveConfiguration(UserConfiguration, userConfigPath);
+            }
         }
 
         private void SaveConfiguration(object obj, string path)
@@ -68,17 +72,41 @@ namespace PiperUI.Services
 
         public ConfigurationService()
         {
-            appDataDir = $"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}\\{appName}";
-            userConfigPath = $"{appDataDir}\\userconfig.json";
-            appConfigPath = $"{appDataDir}\\appconfig.json";
+            userConfigPath = $"{HelperMethods.userDataDir}\\userconfig.json";
+            appConfigPath = $"{HelperMethods.appDataDir}\\appconfig.json";
 
-            if (!Directory.Exists(appDataDir))
+            if (!Directory.Exists(HelperMethods.userDataDir))
             {
-                Directory.CreateDirectory(appDataDir);
+                Directory.CreateDirectory(HelperMethods.userDataDir);
+            }
+
+            if (!Directory.Exists(HelperMethods.userFilesDir))
+            {
+                Directory.CreateDirectory(HelperMethods.userFilesDir);
+            }
+
+            if (!Directory.Exists(HelperMethods.CustomVoicesDirectory))
+            {
+                Directory.CreateDirectory(HelperMethods.CustomVoicesDirectory);
+            }
+
+            if (!Directory.Exists(HelperMethods.OutputDirectory))
+            {
+                Directory.CreateDirectory(HelperMethods.OutputDirectory);
             }
 
             if (!File.Exists(userConfigPath))
             {
+                // Initialize with sensible defaults if not already set
+                if (UserConfiguration == null)
+                {
+                    UserConfiguration = new JsonObject
+                    {
+                        ["Theme"] = "Dark",
+                        ["CustomVoicesDirectory"] = HelperMethods.CustomVoicesDirectory,
+                        ["OutputDirectory"] = Path.Combine(HelperMethods.userFilesDir, HelperMethods.outputDir)
+                    };
+                }
                 SaveUserConfiguration();
             }
 
@@ -87,8 +115,24 @@ namespace PiperUI.Services
                 LoadUserConfiguration();
             }
 
+            if (!Directory.Exists(HelperMethods.appDataDir))
+            {
+                Directory.CreateDirectory(HelperMethods.appDataDir);
+            }
+
             if (!File.Exists(appConfigPath))
             {
+                // Initialize with sensible defaults if not already set
+                if (ApplicationConfiguration == null)
+                {
+                    ApplicationConfiguration = new JsonObject
+                    {
+                        ["VoicesDownloadUrl"] = HelperMethods.voicesDownloadUrl,
+                        ["PiperDownloadUrl"] = HelperMethods.piperDownloadUrl,
+                        ["ModelsDirectory"] = Path.Combine(HelperMethods.appDataDir, "models"),
+                        ["PiperDirectory"] = HelperMethods.appDataDir
+                    };
+                }
                 SaveApplicationConfiguration();
             }
 

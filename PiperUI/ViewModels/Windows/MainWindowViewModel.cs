@@ -30,6 +30,12 @@ namespace PiperUI.ViewModels.Windows
                 Content = "Settings",
                 Icon = new SymbolIcon { Symbol = SymbolRegular.Settings24 },
                 TargetPageType = typeof(Views.Pages.SettingsPage)
+            },
+            new NavigationViewItem()
+            {
+                Content = "Info",
+                Icon = new SymbolIcon { Symbol = SymbolRegular.Info24 },
+                TargetPageType = typeof(Views.Pages.InfoPage)
             }
         };
 
@@ -41,15 +47,7 @@ namespace PiperUI.ViewModels.Windows
 
         public MainWindowViewModel(IConfigurationService configuration, IDownloaderService downloader)
         {
-            //_downloader = downloader;
-            // Initialize the application data folder for storing models or output files
-            string modelsFolder = Path.Combine(HelperMethods.AppDataPath, "models"); // Folder for models
-            string outputFolder = Path.Combine(HelperMethods.AppDataPath, "output"); // Folder for output files
-            string customFolder = Path.Combine(HelperMethods.AppDataPath, "custom"); // Folder for custom models
-            // Create the directories if they do not exist
-            Directory.CreateDirectory(modelsFolder); // Create models folder
-            Directory.CreateDirectory(outputFolder); // Create output folder
-            Directory.CreateDirectory(customFolder); // Create custom folder
+            
         }
         
     }
