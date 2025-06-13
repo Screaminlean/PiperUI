@@ -36,11 +36,11 @@ namespace PiperUI.Views.Windows
             // Register for SnackbarMessage globally
             WeakReferenceMessenger.Default.Register<SnackbarMessage>(this, (r, m) =>
             {
-                ShowSnackbar(m.Value.Message, m.Value.Appearance);
+                ShowSnackbar(m.Value.Message, m.Value.Appearance, m.Value.Timeout);
             });
         }
 
-        private void ShowSnackbar(string message, ControlAppearance appearance = ControlAppearance.Primary)
+        private void ShowSnackbar(string message, ControlAppearance appearance = ControlAppearance.Primary, System.TimeSpan? timeout = null)
         {
             if (_snackbarPresenter == null)
                 return;
@@ -49,6 +49,10 @@ namespace PiperUI.Views.Windows
                 Content = message,
                 Appearance = appearance
             };
+            if (timeout.HasValue)
+            {
+                _snackbar.Timeout = timeout.Value;
+            }
             _snackbar.Show();
         }
 

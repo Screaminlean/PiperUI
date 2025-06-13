@@ -142,7 +142,7 @@ namespace PiperUI.ViewModels.Pages
                 success = false;
             }
 
-            // Send snackbar message via Messenger
+            // Send snackbar message via Messenger with timeout
             var message = success ? "Settings saved successfully!" : "Failed to save settings.";
             var appearance = success ? Wpf.Ui.Controls.ControlAppearance.Success : Wpf.Ui.Controls.ControlAppearance.Danger;
             WeakReferenceMessenger.Default.Send(new SnackbarMessage(message, appearance));
