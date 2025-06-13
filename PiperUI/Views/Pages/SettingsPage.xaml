@@ -129,9 +129,9 @@
 
 
         <ui:Button
-        Margin="0,12,0,0"
+        Margin="10,10,10,0"
             Content="Save"
-            Command="{Binding ViewModel.SaveSettingsCommandCommand}"
+            Command="{Binding ViewModel.SaveSettingsCommandCommand}" HorizontalAlignment="Stretch" Appearance="Primary"
 
         />
     </StackPanel>
