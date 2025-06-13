@@ -8,14 +8,17 @@ using Wpf.Ui.Appearance;
 
 namespace PiperUI.ViewModels.Pages
 {
+    // ViewModel for the Settings page, handles theme, directory, and configuration management
     public partial class SettingsViewModel : ObservableObject, INavigationAware
     {
+        // Services and state fields
         private readonly IConfigurationService _configurationService;
         private bool _isInitialized = false;
         private ApplicationTheme _originalTheme = ApplicationTheme.Unknown;
         private JsonObject _appConfig;
         private JsonObject _userConfig;
 
+        // Observable properties for binding to the UI
         [ObservableProperty]
         private ApplicationTheme _currentTheme = ApplicationTheme.Unknown;
 
@@ -40,7 +43,7 @@ namespace PiperUI.ViewModels.Pages
         [ObservableProperty]
         private string _outputDir = HelperMethods.OutputDirectory;
 
-
+        // Constructor: initializes configuration and loads settings
         public SettingsViewModel(IConfigurationService configuration)
         {
             _configurationService = configuration ?? throw new ArgumentNullException(nameof(configuration));
@@ -54,6 +57,7 @@ namespace PiperUI.ViewModels.Pages
             OutputDir = _userConfig?["OutputDirectory"]?.ToString() ?? HelperMethods.OutputDirectory;
         }
 
+        // Called when navigated to the settings page
         public Task OnNavigatedToAsync()
         {
             if (!_isInitialized)
@@ -62,8 +66,10 @@ namespace PiperUI.ViewModels.Pages
             return Task.CompletedTask;
         }
 
+        // Called when navigated away from the settings page
         public Task OnNavigatedFromAsync() => Task.CompletedTask;
 
+        // Initializes the ViewModel state and loads user settings
         private void InitializeViewModel()
         {
             _configurationService.LoadUserConfiguration();
@@ -72,6 +78,7 @@ namespace PiperUI.ViewModels.Pages
             _isInitialized = true;
         }
 
+        // Loads user settings from configuration, sets defaults if missing
         private void LoadUserSettings()
         {
             if (_userConfig is not null && _userConfig["Theme"] is JsonNode themeNode && Enum.TryParse(themeNode.ToString(), out ApplicationTheme theme))
@@ -88,6 +95,7 @@ namespace PiperUI.ViewModels.Pages
             IsDirty = false;
         }
 
+        // Saves both application and user settings
         private void SaveSettings()
         {
             SaveApplicationSettings();
@@ -95,6 +103,7 @@ namespace PiperUI.ViewModels.Pages
             IsDirty = false;
         }
 
+        // Saves application-level settings (download URLs)
         private void SaveApplicationSettings()
         {
             _appConfig["PiperDownloadUrl"] = PiperDownloadUrl;
@@ -103,6 +112,7 @@ namespace PiperUI.ViewModels.Pages
             _configurationService.SaveApplicationConfiguration();
         }
 
+        // Saves user-level settings (theme, directories)
         private void SaveUserSettings()
         {
             _userConfig["Theme"] = CurrentTheme.ToString();
@@ -112,17 +122,20 @@ namespace PiperUI.ViewModels.Pages
             _configurationService.SaveUserConfiguration();
         }
 
+        // Command: Save settings when triggered from the UI
         [RelayCommand]
         private void SaveSettingsCommand()
         {
             SaveSettings();
         }
 
+        // Called when the theme changes, updates dirty state
         partial void OnCurrentThemeChanged(ApplicationTheme value)
         {
             IsDirty = value != _originalTheme;
         }
 
+        // Command: Change the application theme based on user selection
         [RelayCommand]
         private void OnChangeTheme(string parameter)
         {
@@ -155,6 +168,7 @@ namespace PiperUI.ViewModels.Pages
             }
         }
 
+        // Command: Open a directory in the file explorer
         [RelayCommand]
         private void OpenDirectory(string directory)
         {
@@ -180,10 +194,11 @@ namespace PiperUI.ViewModels.Pages
             }
         }
 
+        // Command: Show a folder picker dialog and set the selected directory property
         [RelayCommand]
         private void SelectDirectory(string propertyName)
         {
-            
+            // Use reflection to get the property by name
             var property = GetType().GetProperty(propertyName);
 
             if (property == null) 
@@ -199,7 +214,7 @@ namespace PiperUI.ViewModels.Pages
 
             if (folderDialog.ShowDialog() == true)
             {
-                
+                // Set the property value if writable
                 if (property != null && property.CanWrite)
                 {
                     property.SetValue(this, folderDialog.FolderName);
