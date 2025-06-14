@@ -1,6 +1,4 @@
-﻿using System.IO;
-using System.Windows.Threading;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using PiperUI.Interfaces;
@@ -9,7 +7,10 @@ using PiperUI.ViewModels.Pages;
 using PiperUI.ViewModels.Windows;
 using PiperUI.Views.Pages;
 using PiperUI.Views.Windows;
+using System.IO;
+using System.Windows.Threading;
 using Wpf.Ui;
+using Wpf.Ui.Appearance;
 using Wpf.Ui.DependencyInjection;
 
 namespace PiperUI
@@ -19,6 +20,14 @@ namespace PiperUI
     /// </summary>
     public partial class App
     {
+        private IConfigurationService _configurationService = null!;
+
+        public App()
+        {
+            _configurationService = (IConfigurationService)Services.GetService(typeof(IConfigurationService));
+            _configurationService?.LoadUserConfiguration();
+        }
+
         // The.NET Generic Host provides dependency injection, configuration, logging, and other services.
         // https://docs.microsoft.com/dotnet/core/extensions/generic-host
         // https://docs.microsoft.com/dotnet/core/extensions/dependency-injection
@@ -74,6 +83,16 @@ namespace PiperUI
         /// </summary>
         private async void OnStartup(object sender, StartupEventArgs e)
         {
+            // Set theme from user config before showing any UI
+            
+            var userConfig = _configurationService?.UserConfiguration as System.Text.Json.Nodes.JsonObject;
+            if (userConfig != null && userConfig["Theme"] != null)
+            {
+                if (Enum.TryParse(userConfig["Theme"].ToString(), out Wpf.Ui.Appearance.ApplicationTheme theme))
+                {
+                    ApplicationThemeManager.Apply(theme);
+                }
+            }
             await _host.StartAsync();
         }
 

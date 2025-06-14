@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using PiperUI.Views.Pages;
+﻿using Microsoft.Extensions.Hosting;
 using PiperUI.Views.Windows;
 using Wpf.Ui;
 
@@ -13,7 +11,7 @@ namespace PiperUI.Services
     {
         private readonly IServiceProvider _serviceProvider;
 
-        private INavigationWindow _navigationWindow;
+        private INavigationWindow? _navigationWindow;
 
         public ApplicationHostService(IServiceProvider serviceProvider)
         {

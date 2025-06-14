@@ -195,6 +195,12 @@ namespace PiperUI.ViewModels.Pages
                     ApplicationThemeManager.Apply(ApplicationTheme.HighContrast);
                     CurrentTheme = ApplicationTheme.HighContrast;
                     break;
+                case "theme_unknown":
+                    if (CurrentTheme == ApplicationTheme.Unknown)
+                        break;
+                    ApplicationThemeManager.Apply(ApplicationTheme.Unknown);
+                    CurrentTheme = ApplicationTheme.Unknown;
+                    break;
                 default:
                     if (CurrentTheme == ApplicationTheme.Dark)
                         break;

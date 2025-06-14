@@ -48,7 +48,14 @@
                 Content="High Contrast"
                 GroupName="themeSelect"
                 IsChecked="{Binding ViewModel.CurrentTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=HighContrast, Mode=OneWay}" />
-
+            <RadioButton
+                Margin="0,8,0,0"
+                Command="{Binding ViewModel.ChangeThemeCommand, Mode=OneWay}"
+                CommandParameter="theme_unknown"
+                Content="System"
+                GroupName="themeSelect"
+                IsChecked="{Binding ViewModel.CurrentTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Unknown, Mode=OneWay}" />
+            
             <TextBlock
                 FontSize="20"
                 FontWeight="Medium"

@@ -5,6 +5,8 @@ using Wpf.Ui.Appearance;
 using Wpf.Ui.Controls;
 using CommunityToolkit.Mvvm.Messaging;
 using PiperUI.Messages;
+using PiperUI.Interfaces;
+using System.Text.Json.Nodes;
 
 namespace PiperUI.Views.Windows
 {
@@ -23,7 +25,15 @@ namespace PiperUI.Views.Windows
             ViewModel = viewModel;
             DataContext = this;
 
-            SystemThemeWatcher.Watch(this);
+            // Get configuration service from DI
+            var configurationService = (IConfigurationService)App.Services.GetService(typeof(IConfigurationService));
+            configurationService?.LoadUserConfiguration();
+            var userConfig = configurationService?.UserConfiguration as JsonObject;
+            var themeValue = userConfig?["Theme"]?.ToString();
+            if (themeValue == null || themeValue == "Unknown")
+            {
+                SystemThemeWatcher.Watch(this);
+            }
 
             InitializeComponent();
             SetPageService(navigationViewPageProvider);
