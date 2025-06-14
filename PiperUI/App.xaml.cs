@@ -61,7 +61,7 @@ namespace PiperUI
                 services.AddSingleton<MainWindowViewModel>();
 
                 services.AddSingleton<DashboardPage>();
-                services.AddSingleton<InfoViewModel>();
+                services.AddSingleton<DashboardViewModel>();
                 services.AddSingleton<SettingsPage>();
                 services.AddSingleton<SettingsViewModel>();
                 services.AddSingleton<InfoPage>();

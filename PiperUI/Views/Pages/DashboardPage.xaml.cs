@@ -3,11 +3,11 @@ using Wpf.Ui.Abstractions.Controls;
 
 namespace PiperUI.Views.Pages
 {
-    public partial class DashboardPage : INavigableView<InfoViewModel>
+    public partial class DashboardPage : INavigableView<DashboardViewModel>
     {
-        public InfoViewModel ViewModel { get; }
+        public DashboardViewModel ViewModel { get; }
 
-        public DashboardPage(InfoViewModel viewModel)
+        public DashboardPage(DashboardViewModel viewModel)
         {
             ViewModel = viewModel;
             DataContext = this;

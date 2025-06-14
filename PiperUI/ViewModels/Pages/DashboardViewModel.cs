@@ -9,14 +9,14 @@ using PiperUI.Interfaces;
 namespace PiperUI.ViewModels.Pages
 {
     // ViewModel for the Info/Dashboard page, manages Piper and voice data, and user selections
-    public partial class InfoViewModel : ObservableObject
+    public partial class DashboardViewModel : ObservableObject
     {
         // Services for configuration and downloading
         private readonly IConfigurationService _configurationService;
         private readonly IDownloaderService _downloaderService;
 
         // Constructor: injects configuration and downloader services
-        public InfoViewModel(IConfigurationService configuration, IDownloaderService downloader)
+        public DashboardViewModel(IConfigurationService configuration, IDownloaderService downloader)
         {
             _configurationService = configuration ?? throw new ArgumentNullException(nameof(configuration));
             _downloaderService = downloader ?? throw new ArgumentNullException(nameof(downloader));

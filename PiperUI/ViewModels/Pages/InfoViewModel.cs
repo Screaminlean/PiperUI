@@ -1,6 +1,4 @@
-﻿using PiperUI.Interfaces;
-using Wpf.Ui.Abstractions.Controls;
-using Wpf.Ui.Appearance;
+﻿using Wpf.Ui.Abstractions.Controls;
 
 namespace PiperUI.ViewModels.Pages
 {
@@ -9,11 +7,6 @@ namespace PiperUI.ViewModels.Pages
         private bool _isInitialized = false;
         [ObservableProperty]
         private string _appVersion = String.Empty;
-
-        public InfoViewModel()
-        {
-            
-        }
 
         public Task OnNavigatedToAsync()
         {
