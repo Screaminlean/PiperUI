@@ -51,7 +51,7 @@
         <!-- Custom ComboBox -->
         <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,10,20">
             <Label Content="Custom" Margin="0,0,0,5"/>
-            <ComboBox x:Name="customComboBox" Height="40"/>
+            <ComboBox x:Name="customComboBox" Height="40" ItemsSource="{Binding ViewModel.CustomVoices}" SelectedItem="{Binding ViewModel.SelectedCustomVoice, Mode=TwoWay}" />
         </StackPanel>
 
         <!-- Clear Button -->
@@ -105,7 +105,7 @@
                 TextWrapping="Wrap" AcceptsReturn="True"
                 ScrollViewer.VerticalScrollBarVisibility="Auto"
                 Margin="0,0,0,20"
-                    Text="{Binding ViewModel.PromtText, Mode=TwoWay}"/>
+                    Text="{Binding ViewModel.PromptText, Mode=TwoWay}"/>
 
         <!-- Generate Button and Label -->
         <StackPanel Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="3" Orientation="Horizontal">

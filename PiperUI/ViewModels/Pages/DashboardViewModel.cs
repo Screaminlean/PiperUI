@@ -8,14 +8,20 @@ using PiperUI.Interfaces;
 
 namespace PiperUI.ViewModels.Pages
 {
-    // ViewModel for the Info/Dashboard page, manages Piper and voice data, and user selections
+    /// <summary>
+    /// ViewModel for the Dashboard page, manages Piper and voice data, and user selections
+    /// </summary>
     public partial class DashboardViewModel : ObservableObject
     {
         // Services for configuration and downloading
         private readonly IConfigurationService _configurationService;
         private readonly IDownloaderService _downloaderService;
 
-        // Constructor: injects configuration and downloader services
+        /// <summary>
+        /// Constructor: injects configuration and downloader services
+        /// </summary>
+        /// <param name="configuration">Configuration service</param>
+        /// <param name="downloader">Downloader service</param>
         public DashboardViewModel(IConfigurationService configuration, IDownloaderService downloader)
         {
             _configurationService = configuration ?? throw new ArgumentNullException(nameof(configuration));
@@ -23,49 +29,102 @@ namespace PiperUI.ViewModels.Pages
         }
 
         // Observable properties for UI binding
+        /// <summary>
+        /// Indicates if voice data is currently being loaded
+        /// </summary>
         [ObservableProperty]
         private bool _isLoadingVoiceData = false;
 
+        /// <summary>
+        /// Status text to display in the UI
+        /// </summary>
         [ObservableProperty]
-        private string _statusText = "Loading"; // Status text to display in the UI
+        private string _statusText = "Loading";
 
+        /// <summary>
+        /// Dictionary containing all loaded voice data
+        /// </summary>
         [ObservableProperty]
         private Dictionary<string, JsonElement> _voiceData = new Dictionary<string, JsonElement>();
 
+        /// <summary>
+        /// List of available languages
+        /// </summary>
         [ObservableProperty]
         private ObservableCollection<string> _languages = new ObservableCollection<string>();
 
+        /// <summary>
+        /// Currently selected language
+        /// </summary>
         [ObservableProperty]
         private string _selectedLanguage = string.Empty;
 
+        /// <summary>
+        /// List of available voices for the selected language
+        /// </summary>
         [ObservableProperty]
         private ObservableCollection<string> _voices = new ObservableCollection<string>();
 
+        /// <summary>
+        /// Currently selected voice
+        /// </summary>
         [ObservableProperty]
         private string _selectedVoice = string.Empty;
 
+        /// <summary>
+        /// List of available qualities for the selected voice
+        /// </summary>
         [ObservableProperty]
         private ObservableCollection<string> _qualities = new ObservableCollection<string>();
 
+        /// <summary>
+        /// Currently selected quality
+        /// </summary>
         [ObservableProperty]
         private string _selectedQuality = string.Empty;
 
+        /// <summary>
+        /// List of custom voices available
+        /// </summary>
+        [ObservableProperty]
+        private ObservableCollection<string> _customVoices = new ObservableCollection<string>();
+
+        /// <summary>
+        /// Currently selected custom voice (default is "None")
+        /// </summary>
+        [ObservableProperty]
+        private string _selectedCustomVoice = "None";
+
+        /// <summary>
+        /// Playback speed for generated audio
+        /// </summary>
         [ObservableProperty]
         private double _playbackSpeed = 1.0;
 
-        // Update playback speed description when changing speed
+        /// <summary>
+        /// Updates playback speed description when changing speed
+        /// </summary>
+        /// <param name="value">New playback speed value</param>
         partial void OnPlaybackSpeedChanging(double value)
         {
             SetPlaybackSpeeDescriptiondAsync().ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Description of the current playback speed
+        /// </summary>
         [ObservableProperty]
         private string _playbackSpeedDescription = "Normal (1.0x)";
 
+        /// <summary>
+        /// The text prompt to be synthesized
+        /// </summary>
         [ObservableProperty]
-        private string _promtText = string.Empty;
+        private string _promptText = string.Empty;
 
-        // Command: Initialize the view model, download Piper if needed, and load voice data
+        /// <summary>
+        /// Initializes the view model, downloads Piper if needed, and loads voice data
+        /// </summary>
         [RelayCommand]
         public async Task InitializeAsync()
         {
@@ -80,10 +139,14 @@ namespace PiperUI.ViewModels.Pages
 
             await LoadVoiceDataAsync(); // Load voice data when the view model is initialized
 
+            await LoadCustomVoicesAsync(); // Load custom voices
+
             StatusText = "Loaded....:)";
         }
 
-        // Downloads and extracts Piper if not present
+        /// <summary>
+        /// Downloads and extracts Piper if not present
+        /// </summary>
         private async Task DownloadPiperAsync()
         {
             // Get the Piper download URL from ApplicationConfiguration
@@ -117,13 +180,17 @@ namespace PiperUI.ViewModels.Pages
             }
         }
 
-        // Determines if voice data can be loaded (always true for now)
+        /// <summary>
+        /// Determines if voice data can be loaded (always true for now)
+        /// </summary>
         private bool CanLoadVoiceData()
         {
             return true;
         }
 
-        // Command: Load voice data, download voices.json if missing
+        /// <summary>
+        /// Loads voice data, downloads voices.json if missing
+        /// </summary>
         [RelayCommand(CanExecute = nameof(CanLoadVoiceData))]
         public async Task LoadVoiceDataAsync()
         {
@@ -205,7 +272,47 @@ namespace PiperUI.ViewModels.Pages
             }
         }
 
-        // Determines if voices can be loaded (not loading and language selected)
+        /// <summary>
+        /// Determines if custom voices can be loaded (always true)
+        /// </summary>
+        private bool CanLoadCustomVoices()
+        {
+            return true; // Always allow loading custom voices
+        }
+
+        /// <summary>
+        /// Loads custom voices from the configured directory
+        /// </summary>
+        [RelayCommand(CanExecute = nameof(CanLoadCustomVoices))]
+        private async Task LoadCustomVoicesAsync()
+        {
+            CustomVoices.Clear();
+            CustomVoices.Add("None"); // Add default option
+
+            // Get the custom voices directory from user configuration or use the default
+            string customVoicesDirectory = _configurationService.UserConfiguration?["CustomVoicesDirectory"]?.ToString() ?? HelperMethods.CustomVoicesDirectory;
+
+            // Check if the folder exists
+            if (Directory.Exists(customVoicesDirectory))
+            {
+                // Get all files with the ".onnx" extension in the folder
+                string[] onnxFiles = await Task.Run(() => Directory.GetFiles(customVoicesDirectory, "*.onnx"));
+
+                // Iterate through the files and add their names to the ComboBox
+                foreach(string filePath in onnxFiles)
+                {
+                    // Get the file name without extension
+                    string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(filePath);
+
+                    // Add the file name to the ComboBox
+                    CustomVoices.Add(fileNameWithoutExtension);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Determines if voices can be loaded (not loading and language selected)
+        /// </summary>
         private bool CanLoadVoices()
         {
             if (!IsLoadingVoiceData || !string.IsNullOrWhiteSpace(SelectedLanguage))
@@ -216,7 +323,9 @@ namespace PiperUI.ViewModels.Pages
             return false;
         }
 
-        // Command: Load voices for the selected language
+        /// <summary>
+        /// Loads voices for the selected language
+        /// </summary>
         [RelayCommand(CanExecute = nameof(CanLoadVoices))]
         public async Task LoadVoicesAsync()
         {
@@ -251,7 +360,9 @@ namespace PiperUI.ViewModels.Pages
             }
         }
 
-        // Command: Load qualities for the selected voice
+        /// <summary>
+        /// Loads qualities for the selected voice
+        /// </summary>
         [RelayCommand]
         public async Task LoadQualitiesAsync()
         {
@@ -277,7 +388,9 @@ namespace PiperUI.ViewModels.Pages
             await Task.Run(()=> Trace.WriteLine($"Loaded {Qualities.Count} qualities for the selected voice: {SelectedVoice}"));
         }
 
-        // Command: Update playback speed description based on the current speed
+        /// <summary>
+        /// Updates playback speed description based on the current speed
+        /// </summary>
         [RelayCommand]
         public async Task SetPlaybackSpeeDescriptiondAsync()
         {
@@ -288,14 +401,16 @@ namespace PiperUI.ViewModels.Pages
             await Task.Run(()=> Trace.WriteLine($"Playback speed set to {speed:F1} - {PlaybackSpeedDescription}."));
         }
 
-        // Determines if the Generate command can execute
+        /// <summary>
+        /// Determines if the Generate command can execute
+        /// </summary>
         private bool CanGenerate()
         {
             // Enable if not loading voice data and all required selections are made
             if (!IsLoadingVoiceData || 
                 !string.IsNullOrWhiteSpace(SelectedLanguage) || 
                 !string.IsNullOrWhiteSpace(SelectedVoice) || 
-                !string.IsNullOrWhiteSpace(PromtText))
+                !string.IsNullOrWhiteSpace(PromptText))
             {
                return true;
             }
@@ -303,26 +418,103 @@ namespace PiperUI.ViewModels.Pages
             return false;
         }
 
-        // Command: Generate output (placeholder for future implementation)
+        /// <summary>
+        /// Command: Generate output (downloads required model files for the selected voice)
+        /// </summary>
         [RelayCommand(CanExecute = nameof(CanGenerate))]
         public async Task GenerateAsync()
         {
-            string promt = await Task.Run(() => HelperMethods.CleanString(PromtText));
+            if (!string.IsNullOrWhiteSpace(PromptText) && SelectedCustomVoice != "None")
+            {
+
+               // await Task.Run(() =>
+               // {
+               //     CallPiper("custom", customVoice + ".onnx");
+               // });
+                await Task.Delay(100);
+            }
+            else if (!string.IsNullOrWhiteSpace(PromptText) && SelectedLanguage != null && SelectedVoice != null && SelectedQuality != null)
+            {
+                string countryCode = GetCountryCode(SelectedVoice, SelectedQuality);
+                // string onnxFile = "";
+
+                if (!string.IsNullOrWhiteSpace(countryCode) && VoiceData.ContainsKey(countryCode))
+                {
+                    // Get the files property from the voice data
+                    var filesProperty = VoiceData[countryCode].GetProperty("files");
+                    foreach (var fileProp in filesProperty.EnumerateObject())
+                    {
+                        string fileName = fileProp.Name;
+                        if (fileName.EndsWith(".onnx") || fileName.EndsWith(".json"))
+                        {
+                            //TODO: move url to settings
+                            // Download the file (async)
+                            string url = $"https://huggingface.co/rhasspy/piper-voices/resolve/main/{fileName}";
+                            // Determine destination directory for model files
+                            string modelsDir = _configurationService.ApplicationConfiguration?["ModelsDirectory"]?.ToString();
+                            string destDir = string.IsNullOrWhiteSpace(modelsDir)
+                                ? Path.Combine(HelperMethods.appDataDir, "models")
+                                : modelsDir;
+                            // Ensure the directory exists
+                            if (!Directory.Exists(destDir))
+                            {
+                                Directory.CreateDirectory(destDir);
+                            }
+                            string destFile = Path.GetFileName(fileName);
+                            bool downloadSuccess = await _downloaderService.DownloadFileAsync(url, destDir, destFile);
+                            if (!downloadSuccess)
+                            {
+                                StatusText = $"Failed to download {destFile}.";
+                                MessageBox.Show($"Failed to download {destFile}.", "Download Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                                break;
+                            }
+                        }
+                    }
+                }
+
+            }
+            else
+            {
+                MessageBox.Show("Make valid selections and enter a prompt");
+            }
+
+                string promt = await Task.Run(() => HelperMethods.CleanString(PromptText));
             await Task.Run(()=>Trace.WriteLine("Generate command executed."));
         }
 
-        // Determines if the prompt text can be cleared
+        /// <summary>
+        /// Determines if the prompt text can be cleared
+        /// </summary>
         private bool CanClearPromptText()
         {
-            return !string.IsNullOrWhiteSpace(PromtText);
+            return !string.IsNullOrWhiteSpace(PromptText);
         }
 
-        // Command: Clear the prompt text
+        /// <summary>
+        /// Clears the prompt text
+        /// </summary>
         [RelayCommand(CanExecute = nameof(CanClearPromptText))]
         public async Task ClearPromptTextAsync()
         {
-            PromtText = string.Empty;
+            PromptText = string.Empty;
             await Task.Run(()=> Trace.WriteLine("Prompt text cleared."));
+        }
+
+        /// <summary>
+        /// Gets the country code key for the selected voice and quality
+        /// </summary>
+        /// <param name="selectedVoiceName">Selected voice name</param>
+        /// <param name="selectedQuality">Selected quality</param>
+        /// <returns>Country code string or null if not found</returns>
+        private string GetCountryCode(string selectedVoiceName, string selectedQuality)
+        {
+            foreach (var countryCode in VoiceData.Keys)
+            {
+                if (countryCode.Contains(selectedVoiceName + "-" + selectedQuality))
+                    return countryCode;
+            }
+
+            return string.Empty; // Handle the case where the country code is not found
         }
     }
 }
