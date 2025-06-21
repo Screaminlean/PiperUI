@@ -32,11 +32,13 @@ namespace PiperUI.Helpers
 
         internal static string piperDownloadUrl => "https://github.com/rhasspy/piper/releases/download/2023.11.14-2/piper_windows_amd64.zip";
 
-        internal static string voicesDownloadUrl => "https://huggingface.co/rhasspy/piper-voices/resolve/main/voices.json";
+        internal static string huggingFaceBaseUrl => "https://huggingface.co/rhasspy/piper-voices/resolve/main/";
+
+        internal static string voicesDownloadUrl => $"{huggingFaceBaseUrl}voices.json";
 
         internal static string CustomVoicesDirectory => Path.Combine(userFilesDir, customDir);
 
-        internal static string OutputDirectory => Path.Combine(userFilesDir, customDir);
+        internal static string OutputDirectory => Path.Combine(userFilesDir, outputDir);
 
     }
 }
